@@ -29,6 +29,13 @@ public:
         diffusion_strength_matrix = get_diffusion_strength_matrix();
     }
 
+    void update_neighbours (Cell **main_grid){
+        //FIXME cyklus - @Matej
+        main_grid[diffusion_direction_matrix[0][0][0]][diffusion_direction_matrix[0][0][1]].emissions += emissions * diffusion_strength_matrix[0][0];
+    }
+
+
+
     int get_x_loc() {
         return x_loc;
     }

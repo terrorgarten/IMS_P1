@@ -11,3 +11,7 @@ int main(int argc, char **argv) {
     sample_cell.print_diffusion_strength_matrix();
     return 0;
 }
+
+//TODO - funkce na vytvoreni 40x40 pole, typu cell a kazdej cell volat pres konstruktor s jeho indexama v poli
+//
+//TODO - User input - velikost pole, cas iterace, lokace zdroju
