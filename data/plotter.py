@@ -53,7 +53,7 @@ print(type(gdf))
 
 
 # this is a simple map that goes with geopandas
-prague_shapefile = gpd.read_file(r'shapefiles/PRAHA_P.shp')
+prague_shapefile = gpd.read_file(r'../shapefiles/PRAHA_P.shp')
 # world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 gdf.plot(ax=prague_shapefile.plot(figsize=(10, 6)), marker='o', color='red', markersize=15)
 gdf.to_file("tmp.png")
