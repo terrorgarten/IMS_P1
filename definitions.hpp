@@ -11,6 +11,7 @@
 #define DEFAULT_T 0
 #define FACTORY_T 1
 #define GREEN_T 2
+#define BORDER_T 3
 
 /* WIND TYPES */
 

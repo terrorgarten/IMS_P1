@@ -4,8 +4,10 @@
 #include "model.hpp"
 
 using namespace std;
-    int main(int argc, char **argv) {
-        Cell sample_cell(1, 1, 0, 0);
-        sample_cell.print_spread_matrix();
-        return 0;
-    }
+
+int main(int argc, char **argv) {
+    Cell sample_cell(4, 4, 0, 0);
+    sample_cell.print_diffusion_direction_matrix();
+    sample_cell.print_diffusion_strength_matrix();
+    return 0;
+}
