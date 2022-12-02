@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
             int i = stoi(row[4]);
             int j = stoi(row[5]);
             if(map_grid[i][j].emissions != 0){
-                map_grid[i][j].emissions += stoi(row[3])/TICK_SIZE;
+                map_grid[i][j].emissions += stoi(row[3]);
             }
             else{
-                map_grid[i][j].emissions = stoi(row[3])/TICK_SIZE;
+                map_grid[i][j].emissions = stoi(row[3]);
             }
             map_grid[i][j].cell_type = FACTORY_T;
         }
