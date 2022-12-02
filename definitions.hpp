@@ -16,6 +16,8 @@
 /* WIND TYPES */
 
 #define NONE 0
+#define SIZE 40 //40*40 grid
+#define TICK_SIZE 8760 //hours in year
 #define NORTH 1
 #define SOUTH 2
 #define EAST 3
