@@ -13,20 +13,28 @@ using namespace std;
 
 class Cell {
 private:
-    unsigned int cell_type;
-    int ***diffusion_direction_matrix;
-    float **diffusion_strength_matrix;
+    int ***diffusion_direction_matrix{};
+    float **diffusion_strength_matrix{};
 public:
-    unsigned int emissions;
+    unsigned int cell_type;
+    unsigned int emissions; //tons per year/TICK_size = tons/hour
     unsigned x_loc;
     unsigned y_loc;
 
-    Cell(unsigned x, unsigned y, unsigned type, int wind) {
+    Cell (){
+        this->emissions = 0;
+        this->x_loc = 0;
+        this->y_loc = 0;
+        this->cell_type = DEFAULT_T;
+    }
+
+    Cell(unsigned x, unsigned y, unsigned type, int wind, unsigned int _emissions, int tick_size = 365*24) {
         x_loc = x;
         y_loc = y;
         cell_type = type;
         diffusion_direction_matrix = get_diffusion_direction_matrix(wind, x_loc, y_loc);
         diffusion_strength_matrix = get_diffusion_strength_matrix();
+        emissions = _emissions / tick_size;
     }
 
     void update_neighbours (Cell **main_grid){
@@ -34,14 +42,20 @@ public:
         main_grid[diffusion_direction_matrix[0][0][0]][diffusion_direction_matrix[0][0][1]].emissions += emissions * diffusion_strength_matrix[0][0];
     }
 
-
-
-    int get_x_loc() {
+    unsigned int get_x_loc() const {
         return x_loc;
     }
 
-    int get_y_loc() {
+    unsigned int get_emissions() const {
+        return emissions;
+    }
+
+    unsigned int get_y_loc() const {
         return y_loc;
+    }
+
+    void print_info() const{
+        printf("Type:%d Emissions: %d\n", this->cell_type, this->emissions);
     }
 
     void print_diffusion_direction_matrix() {
