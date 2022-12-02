@@ -30,3 +30,6 @@
 #define SM_WIDTH 3
 
 #define DIMENSION 2
+
+/* ERRORS */
+#define INVALID_WIND_DIR 2

@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    Cell sample_cell(4, 4, 0, 0);
+    Cell sample_cell(4, 4, 0, 7);
     sample_cell.print_diffusion_direction_matrix();
     sample_cell.print_diffusion_strength_matrix();
     return 0;
