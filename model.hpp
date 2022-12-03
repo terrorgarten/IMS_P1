@@ -9,5 +9,10 @@
 
 #include "cell.hpp"
 #include "definitions.hpp"
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <getopt.h>
+
 //#include "spread_matrix.h"
 //#include "definitions.h"

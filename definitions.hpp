@@ -7,6 +7,9 @@
 
 #endif //IMS_P1_DEFINITIONS_H
 
+#include <iostream>
+#include <tuple>
+
 /* CELL TYPES */
 #define DEFAULT_T 0
 #define FACTORY_T 1

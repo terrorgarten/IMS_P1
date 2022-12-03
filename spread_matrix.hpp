@@ -8,9 +8,6 @@
 #endif //IMS_P1_SPREAD_MATRIX_H
 
 #include "definitions.hpp"
-#include <iostream>
-#include <tuple>
-
 
 using namespace std;
 //typedef tuple<int, int> offset_t;
