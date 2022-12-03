@@ -17,7 +17,6 @@
 
 #define NONE 0
 #define SIZE 40 //40*40 grid
-#define TICK_SIZE 8760 //hours in year
 #define NORTH 1
 #define SOUTH 2
 #define EAST 3
@@ -28,10 +27,14 @@
 #define SOUTH_WEST 8
 
 /* Spread matrix */
-#define SM_HEIGHT 3
-#define SM_WIDTH 3
-
+#define SM_SIZE 3
+#define SM_HEIGHT SM_SIZE
+#define SM_WIDTH SM_SIZE
 #define DIMENSION 2
-
+#define INVALID_INDEX (-1)
 /* ERRORS */
 #define INVALID_WIND_DIR 2
+
+/* EMISSION COUNTING */
+#define TICK_SIZE 8760 //hours in year
+#define TO_KILOS 1000

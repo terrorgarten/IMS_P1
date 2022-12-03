@@ -31,17 +31,22 @@ int ***create_3D_array(unsigned height, unsigned width) {
     return array3D;
 }
 
-void fill_diffusion_direction_matrix(int ***matrix, int x_loc, int y_loc, int x_shift, int y_shift) {
-    for (int i = 0; i < SM_WIDTH; i++) {
-        for (int j = 0; j < SM_HEIGHT; j++) {
+void fill_diffusion_direction_matrix(int ***matrix, unsigned int x_loc, unsigned int y_loc, int x_shift, int y_shift) {
+    for (unsigned int i = 0; i < SM_WIDTH; i++) {
+        for (unsigned int j = 0; j < SM_HEIGHT; j++) {
             matrix[i][j][0] = i + x_loc + x_shift;
             matrix[i][j][1] = j + y_loc + y_shift;
+            //if the index is out of the grid, set INVALID_INDEX
+            if(matrix[i][j][0] >= SIZE || matrix[i][j][0] < 0 || matrix[i][j][1] >= SIZE || matrix[i][j][1] < 0){
+                matrix[i][j][0] = INVALID_INDEX;
+                matrix[i][j][1] = INVALID_INDEX;
+            }
         }
     }
 }
 
 
-int ***get_diffusion_direction_matrix(int wind, int x, int y) {
+int ***get_diffusion_direction_matrix(int wind, unsigned int x, unsigned int y) {
     int ***matrix = create_3D_array(SM_HEIGHT, SM_WIDTH);
     int x_shift, y_shift = 0;
     switch (wind) {
