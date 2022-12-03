@@ -19,9 +19,9 @@ private:
 
 public:
     unsigned int cell_type;
-    unsigned int emissions; //tons per year/TICK_size = tons/hour
-    unsigned int concentration;
-    unsigned int next_tick_concentration;
+    int emissions; //tons per year/TICK_size = tons/hour
+    int concentration;
+    int next_tick_concentration;
     unsigned x_loc;
     unsigned y_loc;
 
@@ -34,7 +34,7 @@ public:
         this->cell_type = DEFAULT_T;
     }
 
-    Cell(unsigned x, unsigned y, unsigned type, int wind, unsigned int _emissions, int tick_size = 365*24) {
+    Cell(unsigned x, unsigned y, unsigned type, int wind, int _emissions, int tick_size = 365*24) {
         concentration = 0;
         next_tick_concentration = 0;
         x_loc = x;
@@ -53,23 +53,36 @@ public:
             auto initial_concentration = concentration;
             for (auto i = 0; i < SM_HEIGHT; i++) {
                 for (auto j = 0; j < SM_WIDTH; j++) {
-                    auto spread = static_cast<float>(concentration) * diffusion_strength_matrix[i][j];  //TODO tady
+                    //calculate the diffusion via matrix
+                    auto target_diffusion = concentration * diffusion_strength_matrix[i][j];
+                    float spread;
+                    //if the diffusion is negative - i.e. trees take-in, do not apply the natural diffusion
+                    if(concentration < 0){
+                        spread = target_diffusion;
+                    }
+                    //if it is the factory diffusion, lower it by 5% as the natural diffusion
+                    else{
+                        spread = target_diffusion * NATURAL_DIFFUSION_COEF;
+                    }
+
+                    //get diffusion target
                     auto x_coord = diffusion_direction_matrix[i][j][0];
                     auto y_coord = diffusion_direction_matrix[i][j][1];
 
-                    //diffusion out of the system
+                    //diffusion out of the system is invalid
                     if (x_coord == -1 || y_coord == -1) {
-                        cout << x_loc << ":" << y_loc << " --- Cant emmit to " << x_coord << ":" << y_coord << endl;
+                        //cout << x_loc << ":" << y_loc << " --- Cant emmit to " << x_coord << ":" << y_coord << endl;
                         continue;
                     }
-                        //diffusion to other cells
+                    //apply diffusion to other cells
                     else {
-                        main_grid[x_coord][y_coord].next_tick_concentration += static_cast<int>(spread);
-                        cout << x_loc << ":" << y_loc << " --- Emmiting " << spread << " to " << x_coord << ":"
-                             << y_coord << endl;
+                        main_grid[x_coord][y_coord].next_tick_concentration += spread;
+                        //cout << x_loc << ":" << y_loc << " --- Emmiting " << spread << " to " << x_coord << ":"
+                        //     << y_coord << endl;
                     }
                 }
             }
+            //sub the diffused CO2
             concentration -= initial_concentration;
         }
     }
@@ -77,6 +90,10 @@ public:
     void propagate_concentration(){
         concentration += next_tick_concentration;
         next_tick_concentration = 0;
+        //diffusion cant go to negative in this model
+        if(concentration < 0){
+            concentration = 0;
+        }
     }
 
     void emit(){

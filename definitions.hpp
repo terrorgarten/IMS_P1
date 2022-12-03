@@ -35,9 +35,17 @@
 #define SM_WIDTH SM_SIZE
 #define DIMENSION 2
 #define INVALID_INDEX (-1)
+
 /* ERRORS */
 #define INVALID_WIND_DIR 2
+#define BAD_ARGS 3
 
 /* EMISSION COUNTING */
 #define TICK_SIZE 8760 //hours in year
 #define TO_KILOS 1000
+//coefficient of natural CO2 fallout (ground, vertical exit of system)
+#define NATURAL_DIFFUSION_COEF (0.95)
+
+/* OUTPUT */
+#define CMD 0
+#define GUI 1

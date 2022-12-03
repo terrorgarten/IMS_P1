@@ -3,8 +3,8 @@ OBJECTS=$(SOURCES:.cpp=.o)
 DEPS=$(SOURCES:.cpp=.d)
 BINS=$(SOURCES:.cpp=)
 
-#CFLAGS+=-MMD #-lsimlib
-#CXXFLAGS+=-MMD #-lsimlib
+CFLAGS+=-MMD -lglut -lGLU -lGL #-lsimlib
+CXXFLAGS+=-MMD -lglut -lGLU -lGL#-lsimlib
 
 all: $(BINS)
 
