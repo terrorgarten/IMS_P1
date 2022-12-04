@@ -274,8 +274,8 @@ void assign_factories() {
             }
 
             //init the factories/parks in map
-            int i = stoi(row[4]);
-            int j = stoi(row[5]);
+            int i = stoi(row[5]);
+            int j = stoi(row[4]);
 
             if (map_grid[i][j].emissions != 0) {
                 map_grid[i][j].emissions += stoi(row[3]) * TO_KILOS / TICK_SIZE;
