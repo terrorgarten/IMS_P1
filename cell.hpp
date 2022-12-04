@@ -24,6 +24,7 @@ public:
     int next_tick_concentration;
     unsigned x_loc;
     unsigned y_loc;
+    int status;
 
     Cell (){
         this->emissions = 0;
@@ -32,6 +33,7 @@ public:
         this->x_loc = 0;
         this->y_loc = 0;
         this->cell_type = DEFAULT_T;
+        this->status = ON;
     }
 
     Cell(unsigned x, unsigned y, unsigned type, int wind, int _emissions, int tick_size = 365*24) {
@@ -43,10 +45,19 @@ public:
         diffusion_direction_matrix = get_diffusion_direction_matrix(wind, x_loc, y_loc);
         diffusion_strength_matrix = get_diffusion_strength_matrix();
         emissions = _emissions / tick_size;
+        status = ON;
+    }
+
+    void switch_status(){
+        if(status == ON){
+            status = OFF;
+        }
+        else if(status == OFF){
+            status = ON;
+        }
     }
 
     void update_neighbours (Cell **main_grid){
-        //TODO pridat prirozeny ubytek - nasobit 0,9 napr
         emit();
         //performance optimalization
         if(concentration != 0) {
@@ -62,7 +73,7 @@ public:
                     }
                     //if it is the factory diffusion, lower it by 5% as the natural diffusion
                     else{
-                        spread = target_diffusion * NATURAL_DIFFUSION_COEF;
+                        spread = target_diffusion * NATURAL_FALLOUT;
                     }
 
                     //get diffusion target
@@ -94,7 +105,10 @@ public:
     }
 
     void emit(){
-        concentration += emissions;
+        //emit only if the factory is running
+        if(status == ON){
+            concentration += emissions;
+        }
     }
 
     unsigned int get_x_loc() const {

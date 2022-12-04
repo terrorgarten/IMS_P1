@@ -16,6 +16,8 @@
 #define GREEN_T 2
 #define BORDER_T 3
 
+#define ON 1
+#define OFF 0
 /* WIND TYPES */
 
 #define NONE 0
@@ -45,8 +47,9 @@
 #define TICK_SIZE 8760 //hours in year
 #define TO_KILOS 1000
 //coefficient of natural CO2 fallout (ground, vertical exit of system)
-#define NATURAL_DIFFUSION_COEF (0.95)
-
+#define NATURAL_FALLOUT (0.95)
+#define SOURCE_FILE "data/indexes.csv"
 /* OUTPUT */
 #define CMD 0
 #define GUI 1
+

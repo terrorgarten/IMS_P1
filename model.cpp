@@ -10,7 +10,7 @@ void propagate_updates();
 
 void print_map_grid();
 
-void run_main_loop(unsigned int iterations);
+void do_iteration();
 
 void print_init_factories();
 
@@ -28,10 +28,13 @@ void iteration_display();
 
 void print_monitored_cell(unsigned int iteration);
 
+void switch_factories();
+
 
 //global var for main cell grid
 Cell **map_grid;
 int *monitored_cell;
+int factory_pause = 0;
 
 int main(int argc, char **argv) {
 
@@ -56,11 +59,30 @@ int main(int argc, char **argv) {
     if (display_output == GUI) {
         run_gui_mode(argc, argv);
     } else {
-        run_main_loop(i);
+        for(int iteration = 0; iteration < i; iteration++){
+            do_iteration();
+            print_monitored_cell(iteration);
+            if(iteration % 12 == 0){
+                switch_factories();
+            }
+        }
         print_map_grid();
     }
     return 0;
 }
+
+void switch_factories() {
+    if(factory_pause == 1) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (map_grid[i][j].cell_type == FACTORY_T) {
+                    map_grid[i][j].switch_status();
+                }
+            }
+        }
+    }
+}
+
 
 void iteration_display() {
     GLfloat minSize = 60.0f / SIZE;
@@ -71,9 +93,14 @@ void iteration_display() {
     glLoadIdentity();
     glViewport(0, 0, SIZE * 20, SIZE * 20);
 
-
+    static int iteration_counter = 0;
     //run single iteration
-    run_main_loop(1);
+    do_iteration();
+    iteration_counter++;
+    if (iteration_counter % 12 == 0) {
+        switch_factories();
+    }
+    print_monitored_cell(iteration_counter);
 
     for (auto i = 0; i < SIZE; i++) {
         for (auto j = 0; j < SIZE; j++) {
@@ -109,7 +136,7 @@ void iteration_display() {
                 glColor4f(1.0f, 0.0f, 1.0f, 0.5f);
             }
             if (current_cell.cell_type == GREEN_T) {
-                //glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
+                glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
             }
 
             glBegin(GL_QUADS); // 2x2 pixels
@@ -123,7 +150,7 @@ void iteration_display() {
     }
     glutSwapBuffers();
     glutPostRedisplay();
-    usleep(250000);
+    usleep(500000);
 }
 
 void run_gui_mode(int argc, char **argv) {
@@ -138,7 +165,7 @@ void run_gui_mode(int argc, char **argv) {
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
     int opt;
     char *token;
-    while ((opt = getopt(argc, argv, "i:w:gm:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:w:gm:p")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -160,6 +187,9 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
                     cerr << "Monitored cell is past grid bounds, which is " << 0 << " to " << SIZE - 1 << endl;
                     exit(INVALID_MONITOR_CELL);
                 }
+                break;
+            case 'p':
+                factory_pause = 1;
                 break;
             case '?' :
             case ':' :
@@ -187,7 +217,7 @@ void assign_factories() {
     int count = 0;
     // File pointer
     std::fstream file;
-    file.open("data/indexes.csv", ios::in);
+    file.open(SOURCE_FILE, ios::in);
 
     vector<string> row;
     string line, word, temp;
@@ -227,16 +257,13 @@ void assign_factories() {
             }
         }
     } else {
-        fprintf(stderr, "Couldn't open file\n");
+        cout << "Couldn't open file" << endl;
     }
 }
 
-void run_main_loop(unsigned int iterations) {
-    for (auto iteration = 0; iteration < iterations; iteration++) {
-        update_all_cells();
-        propagate_updates();
-        print_monitored_cell(iteration);
-    }
+void do_iteration() {
+    update_all_cells();
+    propagate_updates();
 }
 
 void print_monitored_cell(unsigned int iteration) {
