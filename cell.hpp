@@ -48,6 +48,22 @@ public:
         status = ON;
     }
 
+    void free_resources(){
+        //deallocate resources
+        for(auto i = 0; i < SM_HEIGHT; i++){
+            for(auto j = 0; j < SM_WIDTH; j++){
+                delete diffusion_direction_matrix[i][j];
+            }
+            delete diffusion_direction_matrix[i];
+        }
+        delete diffusion_direction_matrix;
+
+        for(int i = 0; i < SM_WIDTH; i++){
+            delete diffusion_strength_matrix[i];
+        }
+        delete diffusion_strength_matrix;
+    }
+
     void switch_status(){
         if(status == ON){
             status = OFF;

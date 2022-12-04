@@ -83,7 +83,15 @@ void free_resources() {
     if (outfile.is_open()) {
         outfile.close();
     }
-
+    delete monitored_cell;
+    //destruct map_grid
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            map_grid[i][j].free_resources();
+        }
+        delete[] map_grid[i];
+    }
+    delete[] map_grid;
 }
 
 void switch_factories() {
