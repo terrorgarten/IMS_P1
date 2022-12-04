@@ -16,6 +16,8 @@
 #include <GL/glut.h>
 #include <string.h>
 #include <unistd.h>
+#include <fstream>
+
 
 //#include "spread_matrix.h"
 //#include "definitions.h"

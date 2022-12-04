@@ -32,7 +32,7 @@ void switch_factories();
 
 void print_concentration_sum(int iteration);
 
-
+void free_resources();
 
 //global var for main cell grid
 Cell **map_grid;
@@ -40,7 +40,7 @@ Cell **map_grid;
 int *monitored_cell;
 int factory_pause = OFF;
 int print_sum = OFF;
-
+ofstream outfile;
 
 int main(int argc, char **argv) {
 
@@ -75,7 +75,15 @@ int main(int argc, char **argv) {
         }
         print_map_grid();
     }
+    free_resources();
     return 0;
+}
+
+void free_resources() {
+    if (outfile.is_open()) {
+        outfile.close();
+    }
+
 }
 
 void switch_factories() {
@@ -120,7 +128,7 @@ void iteration_display() {
                 glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
             } else if (current_cell.concentration <= 500 && current_cell.concentration > 0) {
                 //weak yellow
-                glColor4f(0.5f, 0.5f, 0.2f, 0.0f);
+                glColor4f(0.5f, 0.5f, 0.9f, 0.0f);
             } else if (current_cell.concentration <= 1000 && current_cell.concentration > 500) {
                 //weak yellow
                 glColor4f(0.5f, 0.5f, 0.0f, 0.0f);
@@ -176,7 +184,7 @@ void run_gui_mode(int argc, char **argv) {
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
     int opt;
     char *token;
-    while ((opt = getopt(argc, argv, "i:w:gm:ps")) != -1) {
+    while ((opt = getopt(argc, argv, "i:w:gm:pso:")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -205,8 +213,17 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
             case 's':
                 print_sum = ON;
                 break;
+            case 'o':
+                try {
+                    outfile.open(optarg);
+                }
+                catch (...) {
+                    cerr << "Could not open output file " << optarg << ". Aborting." << endl;
+                    exit(BAD_FILE);
+                }
+                break;
             case '?' :
-                cerr << "Unknown option " << opt << " is ignored" << endl;
+                cerr << "Unknown option \"" << opt << "\" is ignored" << endl;
             case ':' :
             default:
                 cerr << "Invalid argument, if an option is given, its argument is mandatory" << endl;
@@ -221,7 +238,7 @@ void init_grid_map(int wind) {
         map_grid[i] = new Cell[SIZE + 1];
 
     for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {                            //TODO vitr z argumentu
+        for (int j = 0; j < SIZE; j++) {
             map_grid[i][j] = *new Cell(i, j, DEFAULT_T, wind, 0);
         }
     }
@@ -232,8 +249,13 @@ void assign_factories() {
     int count = 0;
     // File pointer
     std::fstream file;
-    file.open(SOURCE_FILE, ios::in);
-
+    try {
+        file.open(SOURCE_FILE, ios::in);
+    }
+    catch (...) {
+        cerr << "Could not open input file " << SOURCE_FILE << ". Aborting." << endl;
+        exit(BAD_FILE);
+    }
     vector<string> row;
     string line, word, temp;
     if (file.is_open()) {
@@ -274,6 +296,7 @@ void assign_factories() {
     } else {
         cout << "Couldn't open file" << endl;
     }
+    file.close();
 }
 
 void do_iteration() {
@@ -281,23 +304,29 @@ void do_iteration() {
     propagate_updates();
 }
 
-void print_concentration_sum(int iteration){
-    if(print_sum == ON){
+void print_concentration_sum(int iteration) {
+    if (print_sum == ON) {
         int concentration_ctr = 0;
-        for(int i = 0; i < SIZE; i++){
-            for(int j = 0; j < SIZE; j++){
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 concentration_ctr += map_grid[i][j].concentration;
             }
         }
         cout << "ITERATION CONCENTRATION_SUM" << endl << iteration << " " << concentration_ctr << endl;
+        if(outfile.is_open()){
+            outfile << iteration << " " << concentration_ctr << endl;
+        }
     }
 }
-
 
 void print_monitored_cell(unsigned int iteration) {
     if (monitored_cell[0] != -1 || monitored_cell[1] != -1) {
         cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration "
-             << "\tvalue " << endl << iteration << " " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
+             << "\tvalue " << endl << iteration << " " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration
+             << endl;
+        if(outfile.is_open()){
+            outfile << iteration << "," << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
+        }
     }
 }
 
@@ -319,8 +348,8 @@ void propagate_updates() {
 
 void print_init_factories() {
     int k = 1;
-    for (size_t i = 0; i < SIZE; i++) {
-        for (size_t j = 0; j < SIZE; j++) {
+    for (auto i = 0; i < SIZE; i++) {
+        for (auto j = 0; j < SIZE; j++) {
             if (map_grid[i][j].get_emissions() != 0) {
                 printf("%d: %d, %d,%d\n", k, map_grid[i][j].get_emissions(), map_grid[i][j].get_x_loc(),
                        map_grid[i][j].get_y_loc());

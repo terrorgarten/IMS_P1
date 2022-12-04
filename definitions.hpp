@@ -42,6 +42,7 @@
 #define INVALID_WIND_DIR 2
 #define BAD_ARGS 3
 #define INVALID_MONITOR_CELL 4
+#define BAD_FILE 5
 
 /* EMISSION COUNTING */
 #define TICK_SIZE 8760 //hours in year
