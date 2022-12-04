@@ -6,58 +6,64 @@
 
 using namespace std;
 
-void propagate_updates(Cell **map_grid);
+void propagate_updates();
 
-void print_map_grid(Cell **map_grid);
+void print_map_grid();
 
-void run_main_loop(Cell **map_grid, unsigned int iterations);
+void run_main_loop(unsigned int iterations);
 
-void print_init_factories(Cell **map_grid);
+void print_init_factories();
 
-void assign_factories(Cell **map_grid);
+void assign_factories();
 
-void init_gridmap(Cell **map_grid, int wind);
+void init_grid_map(int wind);
 
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output);
 
-void update_all_cells(Cell **map_grid);
+void update_all_cells();
 
-void run_gui_mode(Cell **map_grid, int argc, char **argv);
+void run_gui_mode(int argc, char **argv);
 
 void iteration_display();
 
+void print_monitored_cell(unsigned int iteration);
+
+
+//global var for main cell grid
 Cell **map_grid;
-
-
+int *monitored_cell;
 
 int main(int argc, char **argv) {
+
     //parse user input/txt file
-    // load CSV/txt file, parse it
-    map_grid = new Cell *[SIZE];
     int i = 10, wind = NONE, display_output = CMD;
-
+    monitored_cell = new int[2];
+    monitored_cell[0] = monitored_cell[1] = -1;
     parse_arguments(argc, argv, &i, &wind, &display_output);
+    cout << "Monitoring: " << monitored_cell[0] << ":" << monitored_cell[1] << endl;
 
-    init_gridmap(map_grid, wind);
+    //init main cell grid
+    map_grid = new Cell *[SIZE];
+    init_grid_map(wind);
 
-    assign_factories(map_grid);
+    // load CSV/txt file, parse it
+    assign_factories();
 
-    print_init_factories(map_grid);
+    //show entered factories and green fields
+    print_init_factories();
 
-    if(display_output == GUI){
-        run_gui_mode(map_grid, argc, argv);
+    //select display mode
+    if (display_output == GUI) {
+        run_gui_mode(argc, argv);
+    } else {
+        run_main_loop(i);
+        print_map_grid();
     }
-    else{
-        run_main_loop(map_grid, i);
-        print_map_grid(map_grid);
-    }
-
     return 0;
 }
 
-
 void iteration_display() {
-    GLfloat minSize = 60.0f/SIZE;
+    GLfloat minSize = 60.0f / SIZE;
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 60, 60, 0.0, -1.0, 1.0);
@@ -65,54 +71,45 @@ void iteration_display() {
     glLoadIdentity();
     glViewport(0, 0, SIZE * 20, SIZE * 20);
 
-    run_main_loop(map_grid, 1);
 
-    for(auto i = 0; i < SIZE; i++){
-        for(auto j = 0; j < SIZE; j++){
+    //run single iteration
+    run_main_loop(1);
+
+    for (auto i = 0; i < SIZE; i++) {
+        for (auto j = 0; j < SIZE; j++) {
             auto current_cell = map_grid[i][j];
 
             //set color
-            if(current_cell.concentration == 0){
+            if (current_cell.concentration == 0) {
                 //grey
                 glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration <= 1000 && current_cell.concentration > 0){
+            } else if (current_cell.concentration <= 1000 && current_cell.concentration > 0) {
                 //weak yellow
                 glColor4f(0.5f, 0.5f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 1000 && current_cell.concentration <= 2000){
+            } else if (current_cell.concentration > 1000 && current_cell.concentration <= 2000) {
                 //yellow
                 glColor4f(1.0f, 1.0f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 2000 && current_cell.concentration <= 3000){
+            } else if (current_cell.concentration > 2000 && current_cell.concentration <= 3000) {
                 //weak red
-                glColor4f(0.5f, 0.0f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 3000 && current_cell.concentration <=4000){
+                glColor4f(1.0f, 0.3f, 0.2f, 0.0f);
+            } else if (current_cell.concentration > 3000 && current_cell.concentration <= 4000) {
                 //medium red
                 glColor4f(0.8f, 0.1f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 4000 && current_cell.concentration <= 5000){
+            } else if (current_cell.concentration > 4000 && current_cell.concentration <= 5000) {
                 glColor4f(0.9f, 0.2f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 5000 && current_cell.concentration <= 6000){
+            } else if (current_cell.concentration > 5000 && current_cell.concentration <= 6000) {
                 glColor4f(1.0f, 0.2f, 0.0f, 0.0f);
-            }
-            else if(current_cell.concentration > 6000 && current_cell.concentration <= 7000){
+            } else if (current_cell.concentration > 6000 && current_cell.concentration <= 7000) {
                 glColor4f(1.0f, 0.2f, 0.1f, 0.0f);
-            }
-            else if(current_cell.concentration > 7000){
-                glColor4f(1.0f, 0.3f, 0.2f, 0.0f);
-            }
-            else if(current_cell.concentration < 0){
-                glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
+            } else if (current_cell.concentration > 7000) {
+                glColor4f(0.5f, 0.0f, 0.0f, 0.0f);
             }
 
-            if(current_cell.cell_type == FACTORY_T){
+            if (current_cell.cell_type == FACTORY_T) {
                 glColor4f(1.0f, 0.0f, 1.0f, 0.5f);
             }
-            if(current_cell.cell_type == GREEN_T){
-                glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
+            if (current_cell.cell_type == GREEN_T) {
+                //glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
             }
 
             glBegin(GL_QUADS); // 2x2 pixels
@@ -126,24 +123,22 @@ void iteration_display() {
     }
     glutSwapBuffers();
     glutPostRedisplay();
-    sleep(1);
+    usleep(250000);
 }
 
-void run_gui_mode(Cell **map_grid, int argc, char **argv){
+void run_gui_mode(int argc, char **argv) {
     glutInit(&argc, argv);
-    //glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowPosition(0, 0);
-    glutInitWindowSize(SIZE*20, SIZE*20);
-    glutCreateWindow("IMS - Wildfire simulation - xmlkvy00, xmudry01");
+    glutInitWindowPosition(10, 10);
+    glutInitWindowSize(SIZE * 20, SIZE * 20);
+    glutCreateWindow("CO2 particle spread model");
     glutDisplayFunc(iteration_display);
     glutMainLoop();
 }
 
-
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
-
     int opt;
-    while ((opt = getopt(argc, argv, "i:w:g")) != -1) {
+    char *token;
+    while ((opt = getopt(argc, argv, "i:w:gm:")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -154,17 +149,29 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
             case 'g':
                 *display_output = GUI;
                 break;
+            case 'm':
+                token = strtok(optarg, ":");
+                if (token != nullptr) {
+                    monitored_cell[0] = stoi(token);
+                    monitored_cell[1] = stoi(strtok(nullptr, ":"));
+                }
+                if (monitored_cell[0] < 0 || monitored_cell[0] >= SIZE || monitored_cell[1] < 0 ||
+                    monitored_cell[1] >= SIZE) {
+                    cerr << "Monitored cell is past grid bounds, which is " << 0 << " to " << SIZE - 1 << endl;
+                    exit(INVALID_MONITOR_CELL);
+                }
+                break;
             case '?' :
             case ':' :
             default:
-                fprintf(stderr, "Invalid argument, if an option is given, its argument is mandatory\n");
+                cerr << "Invalid argument, if an option is given, its argument is mandatory" << endl;
                 exit(BAD_ARGS);
 
         }
     }
 }
 
-void init_gridmap(Cell **map_grid, int wind) {
+void init_grid_map(int wind) {
     for (int i = 0; i < SIZE; ++i)
         map_grid[i] = new Cell[SIZE + 1];
 
@@ -176,7 +183,7 @@ void init_gridmap(Cell **map_grid, int wind) {
 }
 
 //https://www.geeksforgeeks.org/csv-file-management-using-c/
-void assign_factories(Cell **map_grid) {
+void assign_factories() {
     int count = 0;
     // File pointer
     std::fstream file;
@@ -208,15 +215,13 @@ void assign_factories(Cell **map_grid) {
             } else {
                 map_grid[i][j].emissions = stoi(row[3]) * TO_KILOS / TICK_SIZE;
             }
-            if(row[2] == "\"FACTORY\""){
+            if (row[2] == "\"FACTORY\"") {
                 cout << "FACTORY added" << endl;
                 map_grid[i][j].cell_type = FACTORY_T;
-            }
-            else if(row[2] ==  "\"GREEN\""){
+            } else if (row[2] == "\"GREEN\"") {
                 cout << "Green added " << endl;
                 map_grid[i][j].cell_type = GREEN_T;
-            }
-            else{
+            } else {
                 cout << "UNKNOWN TYPE: " << row[2] << endl;
 
             }
@@ -226,14 +231,22 @@ void assign_factories(Cell **map_grid) {
     }
 }
 
-void run_main_loop(Cell **map_grid, unsigned int iterations) {
+void run_main_loop(unsigned int iterations) {
     for (auto iteration = 0; iteration < iterations; iteration++) {
-        update_all_cells(map_grid);
-        propagate_updates(map_grid);
+        update_all_cells();
+        propagate_updates();
+        print_monitored_cell(iteration);
     }
 }
 
-void update_all_cells(Cell **map_grid){
+void print_monitored_cell(unsigned int iteration) {
+    if (monitored_cell[0] != -1 || monitored_cell[1] != -1) {
+        cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration " << iteration
+             << "\tvalue: " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
+    }
+}
+
+void update_all_cells() {
     for (auto i = 0; i < SIZE; i++) {
         for (auto j = 0; j < SIZE; j++) {
             map_grid[i][j].update_neighbours(map_grid);
@@ -241,7 +254,7 @@ void update_all_cells(Cell **map_grid){
     }
 }
 
-void propagate_updates(Cell **map_grid) {
+void propagate_updates() {
     for (auto i = 0; i < SIZE; i++) {
         for (auto j = 0; j < SIZE; j++) {
             map_grid[i][j].propagate_concentration();
@@ -249,7 +262,7 @@ void propagate_updates(Cell **map_grid) {
     }
 }
 
-void print_init_factories(Cell **map_grid) {
+void print_init_factories() {
     int k = 1;
     for (size_t i = 0; i < SIZE; i++) {
         for (size_t j = 0; j < SIZE; j++) {
@@ -262,7 +275,7 @@ void print_init_factories(Cell **map_grid) {
     }
 }
 
-void print_map_grid(Cell **map_grid) {
+void print_map_grid() {
     for (auto i = 0; i < SIZE; i++) {
         cout << "|";
         for (auto j = 0; j < SIZE; j++) {
@@ -271,5 +284,3 @@ void print_map_grid(Cell **map_grid) {
         cout << endl;
     }
 }
-
-//TODO - User input - velikost pole, cas iterace, lokace zdroju

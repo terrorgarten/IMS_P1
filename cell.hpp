@@ -56,7 +56,7 @@ public:
                     //calculate the diffusion via matrix
                     auto target_diffusion = concentration * diffusion_strength_matrix[i][j];
                     float spread;
-                    //if the diffusion is negative - i.e. trees take-in, do not apply the natural diffusion
+                    //if the diffusion is negative - i.e. trees take-in, do not apply the natural diffusion to spread amount
                     if(concentration < 0){
                         spread = target_diffusion;
                     }
@@ -71,14 +71,11 @@ public:
 
                     //diffusion out of the system is invalid
                     if (x_coord == -1 || y_coord == -1) {
-                        //cout << x_loc << ":" << y_loc << " --- Cant emmit to " << x_coord << ":" << y_coord << endl;
                         continue;
                     }
                     //apply diffusion to other cells
                     else {
                         main_grid[x_coord][y_coord].next_tick_concentration += spread;
-                        //cout << x_loc << ":" << y_loc << " --- Emmiting " << spread << " to " << x_coord << ":"
-                        //     << y_coord << endl;
                     }
                 }
             }
