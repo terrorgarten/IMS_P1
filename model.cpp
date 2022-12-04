@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
     if (display_output == GUI) {
         run_gui_mode(argc, argv);
     } else {
-        for(int iteration = 0; iteration < i; iteration++){
+        for (int iteration = 0; iteration < i; iteration++) {
             do_iteration();
             print_monitored_cell(iteration);
-            if(iteration % 12 == 0){
+            if (iteration % 12 == 0) {
                 switch_factories();
             }
         }
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 }
 
 void switch_factories() {
-    if(factory_pause == 1) {
+    if (factory_pause == 1) {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (map_grid[i][j].cell_type == FACTORY_T) {
@@ -110,7 +110,10 @@ void iteration_display() {
             if (current_cell.concentration == 0) {
                 //grey
                 glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-            } else if (current_cell.concentration <= 1000 && current_cell.concentration > 0) {
+            } else if (current_cell.concentration <= 500 && current_cell.concentration > 0) {
+                //weak yellow
+                glColor4f(0.5f, 0.5f, 0.2f, 0.0f);
+            } else if (current_cell.concentration <= 1000 && current_cell.concentration > 500) {
                 //weak yellow
                 glColor4f(0.5f, 0.5f, 0.0f, 0.0f);
             } else if (current_cell.concentration > 1000 && current_cell.concentration <= 2000) {
