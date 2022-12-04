@@ -83,7 +83,15 @@ void free_resources() {
     if (outfile.is_open()) {
         outfile.close();
     }
-
+    delete monitored_cell;
+    //destruct map_grid
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            map_grid[i][j].free_resources();
+        }
+        delete[] map_grid[i];
+    }
+    delete[] map_grid;
 }
 
 void switch_factories() {
@@ -274,8 +282,8 @@ void assign_factories() {
             }
 
             //init the factories/parks in map
-            int i = stoi(row[4]);
-            int j = stoi(row[5]);
+            int i = stoi(row[5]);
+            int j = stoi(row[4]);
 
             if (map_grid[i][j].emissions != 0) {
                 map_grid[i][j].emissions += stoi(row[3]) * TO_KILOS / TICK_SIZE;
