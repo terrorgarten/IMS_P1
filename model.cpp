@@ -30,11 +30,17 @@ void print_monitored_cell(unsigned int iteration);
 
 void switch_factories();
 
+void print_concentration_sum(int iteration);
+
+
 
 //global var for main cell grid
 Cell **map_grid;
+//global vars for options
 int *monitored_cell;
-int factory_pause = 0;
+int factory_pause = OFF;
+int print_sum = OFF;
+
 
 int main(int argc, char **argv) {
 
@@ -62,6 +68,7 @@ int main(int argc, char **argv) {
         for (int iteration = 0; iteration < i; iteration++) {
             do_iteration();
             print_monitored_cell(iteration);
+            print_concentration_sum(iteration);
             if (iteration % 12 == 0) {
                 switch_factories();
             }
@@ -101,6 +108,7 @@ void iteration_display() {
         switch_factories();
     }
     print_monitored_cell(iteration_counter);
+    print_concentration_sum(iteration_counter);
 
     for (auto i = 0; i < SIZE; i++) {
         for (auto j = 0; j < SIZE; j++) {
@@ -168,7 +176,7 @@ void run_gui_mode(int argc, char **argv) {
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
     int opt;
     char *token;
-    while ((opt = getopt(argc, argv, "i:w:gm:p")) != -1) {
+    while ((opt = getopt(argc, argv, "i:w:gm:ps")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -192,9 +200,13 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
                 }
                 break;
             case 'p':
-                factory_pause = 1;
+                factory_pause = ON;
+                break;
+            case 's':
+                print_sum = ON;
                 break;
             case '?' :
+                cerr << "Unknown option " << opt << " is ignored" << endl;
             case ':' :
             default:
                 cerr << "Invalid argument, if an option is given, its argument is mandatory" << endl;
@@ -269,10 +281,23 @@ void do_iteration() {
     propagate_updates();
 }
 
+void print_concentration_sum(int iteration){
+    if(print_sum == ON){
+        int concentration_ctr = 0;
+        for(int i = 0; i < SIZE; i++){
+            for(int j = 0; j < SIZE; j++){
+                concentration_ctr += map_grid[i][j].concentration;
+            }
+        }
+        cout << "ITERATION CONCENTRATION_SUM" << endl << iteration << " " << concentration_ctr << endl;
+    }
+}
+
+
 void print_monitored_cell(unsigned int iteration) {
     if (monitored_cell[0] != -1 || monitored_cell[1] != -1) {
-        cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration " << iteration
-             << "\tvalue: " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
+        cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration "
+             << "\tvalue " << endl << iteration << " " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
     }
 }
 
