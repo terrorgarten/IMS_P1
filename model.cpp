@@ -154,7 +154,10 @@ void iteration_display() {
             if (current_cell.concentration == 0) {
                 //grey
                 glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-            } else if (current_cell.concentration <= 500 && current_cell.concentration > 0) {
+            } else if (current_cell.concentration <= 50 && current_cell.concentration > 0) {
+                //weak yellow
+                glColor4f(0.5f, 0.5f, 0.7f, 0.0f);
+            } else if (current_cell.concentration <= 500 && current_cell.concentration > 50) {
                 //weak yellow
                 glColor4f(0.5f, 0.5f, 0.9f, 0.0f);
             } else if (current_cell.concentration <= 1000 && current_cell.concentration > 500) {
