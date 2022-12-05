@@ -1,2 +1,6 @@
 .idea
 model
+venv
+model.o
+model.hpp.gch
+
