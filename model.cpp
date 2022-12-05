@@ -40,6 +40,7 @@ Cell **map_grid;
 int *monitored_cell;
 int factory_pause = OFF;
 int print_sum = OFF;
+int monitor_radius = OFF;
 ofstream outfile;
 
 int main(int argc, char **argv) {
@@ -177,7 +178,7 @@ void iteration_display() {
     }
     glutSwapBuffers();
     glutPostRedisplay();
-    usleep(500000);
+    usleep(200000);
 }
 
 void run_gui_mode(int argc, char **argv) {
@@ -192,7 +193,7 @@ void run_gui_mode(int argc, char **argv) {
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
     int opt;
     char *token;
-    while ((opt = getopt(argc, argv, "i:w:gm:pso:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:w:gm:pso:r")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -229,6 +230,9 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
                     cerr << "Could not open output file " << optarg << ". Aborting." << endl;
                     exit(BAD_FILE);
                 }
+                break;
+            case 'r':
+                monitor_radius = ON;
                 break;
             case '?' :
                 cerr << "Unknown option \"" << opt << "\" is ignored" << endl;
@@ -330,8 +334,20 @@ void print_concentration_sum(int iteration) {
 
 void print_monitored_cell(unsigned int iteration) {
     if (monitored_cell[0] != -1 || monitored_cell[1] != -1) {
+        int monitor_value;
+        if(monitor_radius == ON){
+            monitor_value = 0;
+            for(int i = -1; i <= 1; i++){
+                for(int j = -1; j <= 1; j++){
+                    monitor_value += map_grid[monitored_cell[i]][monitored_cell[j]].concentration;
+                }
+            }
+        }
+        else{
+            monitor_value = map_grid[monitored_cell[0]][monitored_cell[1]].concentration;
+        }
         cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration "
-             << "\tvalue " << endl << iteration << " " << map_grid[monitored_cell[0]][monitored_cell[1]].concentration
+             << "\tvalue " << endl << iteration << " " << monitor_value
              << endl;
         if(outfile.is_open()){
             outfile << iteration << "," << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
