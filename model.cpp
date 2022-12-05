@@ -188,6 +188,9 @@ void iteration_display() {
             if (current_cell.cell_type == GREEN_T) {
                 glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
             }
+            if (current_cell.x_loc == static_cast<unsigned int>(monitored_cell[0]) && current_cell.y_loc == static_cast<unsigned int>(monitored_cell[1])){
+                glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+            }
 
             glBegin(GL_QUADS); // 2x2 pixels
             glVertex2f(0.0f + minSize * j, 0.0f + minSize * i);
