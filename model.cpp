@@ -115,11 +115,13 @@ void switch_factories() {
                 }
             }
         }
-        //turns off all factories
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (map_grid[i][j].cell_type == FACTORY_T) {
-                    map_grid[i][j].switch_status();
+        else {
+            //turns off all factories
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (map_grid[i][j].cell_type == FACTORY_T) {
+                        map_grid[i][j].switch_status();
+                    }
                 }
             }
         }
