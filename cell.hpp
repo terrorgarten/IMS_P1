@@ -37,7 +37,7 @@ public:
     }
 
     Cell(unsigned x, unsigned y, unsigned type, int wind, int _emissions, int tick_size = 365*24) {
-        concentration = 0;
+        concentration = 50;
         next_tick_concentration = 0;
         x_loc = x;
         y_loc = y;
@@ -115,8 +115,8 @@ public:
         concentration += next_tick_concentration;
         next_tick_concentration = 0;
         //diffusion cant go to negative in this model
-        if(concentration < 0){
-            concentration = 0;
+        if(concentration < 50){
+            concentration = 50;
         }
     }
 
