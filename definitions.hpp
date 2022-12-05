@@ -11,17 +11,17 @@
 #include <tuple>
 
 /* CELL TYPES */
+#define SIZE 40 //40*40 grid
 #define DEFAULT_T 0
 #define FACTORY_T 1
 #define GREEN_T 2
-#define BORDER_T 3
 
+#define BORDER_T 3
 #define ON 1
 #define OFF 0
-/* WIND TYPES */
 
+/* WIND TYPES */
 #define NONE 0
-#define SIZE 40 //40*40 grid
 #define NORTH 1
 #define SOUTH 2
 #define EAST 3
@@ -47,9 +47,9 @@
 /* EMISSION COUNTING */
 #define TICK_SIZE 8760 //hours in year
 #define TO_KILOS 1000
-//coefficient of natural CO2 fallout (ground, vertical exit of system)
-#define NATURAL_FALLOUT (0.95)
+#define NATURAL_FALLOUT (0.95) //coefficient of natural CO2 fallout (ground, vertical exit of system)
 #define SOURCE_FILE "data/indexes.csv"
+
 /* OUTPUT */
 #define CMD 0
 #define GUI 1

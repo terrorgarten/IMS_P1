@@ -34,7 +34,7 @@ void fill_diffusion_direction_matrix(int ***matrix, unsigned int x_loc, unsigned
             matrix[i][j][0] = i + x_loc + x_shift;
             matrix[i][j][1] = j + y_loc + y_shift;
             //if the index is out of the grid, set INVALID_INDEX
-            if(matrix[i][j][0] >= SIZE || matrix[i][j][0] < 0 || matrix[i][j][1] >= SIZE || matrix[i][j][1] < 0){
+            if (matrix[i][j][0] >= SIZE || matrix[i][j][0] < 0 || matrix[i][j][1] >= SIZE || matrix[i][j][1] < 0) {
                 matrix[i][j][0] = INVALID_INDEX;
                 matrix[i][j][1] = INVALID_INDEX;
             }
@@ -92,7 +92,9 @@ int ***get_diffusion_direction_matrix(int wind, unsigned int x, unsigned int y) 
             y_shift = -2;
             break;
         default:
-            cerr << "Wrong wind type entered: please use only numbers ranging from 0 to 8. See help for definitions. Aborting." << endl;
+            cerr
+                    << "Wrong wind type entered: please use only numbers ranging from 0 to 8. See help for definitions. Aborting."
+                    << endl;
             exit(INVALID_WIND_DIR);
     }
     fill_diffusion_direction_matrix(matrix, x, y, x_shift, y_shift);

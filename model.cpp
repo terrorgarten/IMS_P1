@@ -104,18 +104,16 @@ void switch_factories() {
             for (int i = 0; i < SIZE; i++) {
                 for (int j = 0; j < SIZE; j++) {
                     if (map_grid[i][j].cell_type == FACTORY_T) {
-                        if(flag == ON ){
+                        if (flag == ON) {
                             map_grid[i][j].switch_status();
                             flag = OFF;
-                        }
-                        else {
+                        } else {
                             flag = ON;
                         }
                     }
                 }
             }
-        }
-        else {
+        } else {
             //turns off all factories
             for (int i = 0; i < SIZE; i++) {
                 for (int j = 0; j < SIZE; j++) {
@@ -190,7 +188,8 @@ void iteration_display() {
             if (current_cell.cell_type == GREEN_T) {
                 glColor4f(0.0f, 1.0f, 0.0f, 0.0f);
             }
-            if (current_cell.x_loc == static_cast<unsigned int>(monitored_cell[0]) && current_cell.y_loc == static_cast<unsigned int>(monitored_cell[1])){
+            if (current_cell.x_loc == static_cast<unsigned int>(monitored_cell[0]) &&
+                current_cell.y_loc == static_cast<unsigned int>(monitored_cell[1])) {
                 glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
             }
 

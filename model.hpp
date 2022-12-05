@@ -18,6 +18,3 @@
 #include <unistd.h>
 #include <fstream>
 
-
-//#include "spread_matrix.h"
-//#include "definitions.h"

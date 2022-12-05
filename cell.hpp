@@ -26,7 +26,7 @@ public:
     unsigned y_loc;
     int status;
 
-    Cell (){
+    Cell() {
         this->emissions = 0;
         this->concentration = 0;
         this->next_tick_concentration = 0;
@@ -36,7 +36,7 @@ public:
         this->status = ON;
     }
 
-    Cell(unsigned x, unsigned y, unsigned type, int wind, int _emissions, int tick_size = 365*24) {
+    Cell(unsigned x, unsigned y, unsigned type, int wind, int _emissions, int tick_size = 365 * 24) {
         concentration = 50;
         next_tick_concentration = 0;
         x_loc = x;
@@ -48,35 +48,34 @@ public:
         status = ON;
     }
 
-    void free_resources(){
+    void free_resources() {
         //deallocate resources
-        for(auto i = 0; i < SM_HEIGHT; i++){
-            for(auto j = 0; j < SM_WIDTH; j++){
+        for (auto i = 0; i < SM_HEIGHT; i++) {
+            for (auto j = 0; j < SM_WIDTH; j++) {
                 delete diffusion_direction_matrix[i][j];
             }
             delete diffusion_direction_matrix[i];
         }
         delete diffusion_direction_matrix;
 
-        for(int i = 0; i < SM_WIDTH; i++){
+        for (int i = 0; i < SM_WIDTH; i++) {
             delete diffusion_strength_matrix[i];
         }
         delete diffusion_strength_matrix;
     }
 
-    void switch_status(){
-        if(status == ON){
+    void switch_status() {
+        if (status == ON) {
             status = OFF;
-        }
-        else if(status == OFF){
+        } else if (status == OFF) {
             status = ON;
         }
     }
 
-    void update_neighbours (Cell **main_grid){
+    void update_neighbours(Cell **main_grid) {
         emit();
         //performance optimalization
-        if(concentration != 0) {
+        if (concentration != 0) {
             auto initial_concentration = concentration;
             for (auto i = 0; i < SM_HEIGHT; i++) {
                 for (auto j = 0; j < SM_WIDTH; j++) {
@@ -84,11 +83,11 @@ public:
                     auto target_diffusion = concentration * diffusion_strength_matrix[i][j];
                     float spread;
                     //if the diffusion is negative - i.e. trees take-in, do not apply the natural diffusion to spread amount
-                    if(concentration < 0){
+                    if (concentration < 0) {
                         spread = target_diffusion;
                     }
-                    //if it is the factory diffusion, lower it by 5% as the natural diffusion
-                    else{
+                        //if it is the factory diffusion, lower it by 5% as the natural diffusion
+                    else {
                         spread = target_diffusion * NATURAL_FALLOUT;
                     }
 
@@ -100,7 +99,7 @@ public:
                     if (x_coord == -1 || y_coord == -1) {
                         continue;
                     }
-                    //apply diffusion to other cells
+                        //apply diffusion to other cells
                     else {
                         main_grid[x_coord][y_coord].next_tick_concentration += spread;
                     }
@@ -111,18 +110,18 @@ public:
         }
     }
 
-    void propagate_concentration(){
+    void propagate_concentration() {
         concentration += next_tick_concentration;
         next_tick_concentration = 0;
         //diffusion cant go to negative in this model
-        if(concentration < 50){
+        if (concentration < 50) {
             concentration = 50;
         }
     }
 
-    void emit(){
+    void emit() {
         //emit only if the factory is running
-        if(status == ON){
+        if (status == ON) {
             concentration += emissions;
         }
     }
@@ -139,7 +138,7 @@ public:
         return y_loc;
     }
 
-    void print_info() const{
+    void print_info() const {
         printf("Type:%d Emissions: %d\n", this->cell_type, this->emissions);
     }
 
@@ -147,13 +146,14 @@ public:
         cout << "Wind diffusion direction" << endl;
         for (int i = 0; i < SM_HEIGHT; i++) {
             for (int j = 0; j < SM_HEIGHT; j++) {
-                cout << "\t" << diffusion_direction_matrix[i][j][0] << " " << diffusion_direction_matrix[i][j][1] << "\t|";
+                cout << "\t" << diffusion_direction_matrix[i][j][0] << " " << diffusion_direction_matrix[i][j][1]
+                     << "\t|";
             }
             cout << endl;
         }
     }
 
-    void print_diffusion_strength_matrix(){
+    void print_diffusion_strength_matrix() {
         cout << "Diffusion strength" << endl;
         for (int i = 0; i < SM_HEIGHT; i++) {
             for (int j = 0; j < SM_HEIGHT; j++) {
