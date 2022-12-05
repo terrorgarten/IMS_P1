@@ -41,6 +41,7 @@ int *monitored_cell;
 int factory_pause = OFF;
 int print_sum = OFF;
 int monitor_radius = OFF;
+int factory_half_pause = OFF;
 ofstream outfile;
 
 int main(int argc, char **argv) {
@@ -96,7 +97,25 @@ void free_resources() {
 }
 
 void switch_factories() {
-    if (factory_pause == 1) {
+    if (factory_pause == ON) {
+        //turns off just every second factory
+        if (factory_half_pause == ON) {
+            int flag = ON;
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (map_grid[i][j].cell_type == FACTORY_T) {
+                        if(flag == ON ){
+                            map_grid[i][j].switch_status();
+                            flag = OFF;
+                        }
+                        else {
+                            flag = ON;
+                        }
+                    }
+                }
+            }
+        }
+        //turns off all factories
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (map_grid[i][j].cell_type == FACTORY_T) {
@@ -193,7 +212,7 @@ void run_gui_mode(int argc, char **argv) {
 void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_output) {
     int opt;
     char *token;
-    while ((opt = getopt(argc, argv, "i:w:gm:pso:r")) != -1) {
+    while ((opt = getopt(argc, argv, "i:w:gm:pso:rh")) != -1) {
         switch (opt) {
             case 'i' :
                 *i = stoi(optarg);
@@ -232,7 +251,21 @@ void parse_arguments(int argc, char **argv, int *i, int *wind, int *display_outp
                 }
                 break;
             case 'r':
-                monitor_radius = ON;
+                if (monitored_cell[0] != -1 && monitored_cell[1] != -1) {
+                    monitor_radius = ON;
+                } else {
+                    cerr << "-r (radius) option does not work without -m, -r must also be entered AFTER -m. -r ignored."
+                         << endl;
+                }
+                break;
+            case 'h':
+                if (factory_pause == ON) {
+                    factory_half_pause = ON;
+                } else {
+                    cerr
+                            << "-h (half factories pause) must be entered with -p, -h must also be entered AFTER -p. -h ignored."
+                            << endl;
+                }
                 break;
             case '?' :
                 cerr << "Unknown option \"" << opt << "\" is ignored" << endl;
@@ -326,7 +359,7 @@ void print_concentration_sum(int iteration) {
             }
         }
         cout << "ITERATION CONCENTRATION_SUM" << endl << iteration << " " << concentration_ctr << endl;
-        if(outfile.is_open()){
+        if (outfile.is_open()) {
             outfile << iteration << " " << concentration_ctr << endl;
         }
     }
@@ -335,21 +368,20 @@ void print_concentration_sum(int iteration) {
 void print_monitored_cell(unsigned int iteration) {
     if (monitored_cell[0] != -1 || monitored_cell[1] != -1) {
         int monitor_value;
-        if(monitor_radius == ON){
+        if (monitor_radius == ON) {
             monitor_value = 0;
-            for(int i = -1; i <= 1; i++){
-                for(int j = -1; j <= 1; j++){
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
                     monitor_value += map_grid[monitored_cell[i]][monitored_cell[j]].concentration;
                 }
             }
-        }
-        else{
+        } else {
             monitor_value = map_grid[monitored_cell[0]][monitored_cell[1]].concentration;
         }
         cout << "MONITOR (" << monitored_cell[0] << ":" << monitored_cell[1] << ")\titeration "
              << "\tvalue " << endl << iteration << " " << monitor_value
              << endl;
-        if(outfile.is_open()){
+        if (outfile.is_open()) {
             outfile << iteration << "," << map_grid[monitored_cell[0]][monitored_cell[1]].concentration << endl;
         }
     }
