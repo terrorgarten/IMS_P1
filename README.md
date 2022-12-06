@@ -5,7 +5,7 @@ Model for C02 emission spread based on actual data of REZZO1 static CO2 sources 
 Default lattice is 40x40. All input can be changed via editing data/indexes.csv file.
 ## Dependencies
 - ```<GL/glut.h>``` installed
-- any linus system
+- any linux system
 
 ## Compilation 
 ```make```
